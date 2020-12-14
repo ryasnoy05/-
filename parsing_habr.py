@@ -4,7 +4,7 @@ import csv
 from multiprocessing import Pool
 
 
-def csv_write(data):
+def csv_write(data): #Записываем словарь с данными в CSV файл
     with open("E:/work/data.csv",'a', encoding='utf-8') as file:
         writer = csv.writer(file)
         for post in data:
@@ -13,18 +13,18 @@ def csv_write(data):
 
 
 def get_html(url):
-    r = requests.get(url) #отправляем HTTP запрос и получаем результат
+    r = requests.get(url) #Отправляем HTTP запрос и получаем результат
     return r.text
 
 
-def all_links():
+def all_links(): # Получаеи ссылки всех страниц для парсинга и записываем их в массив, для дальнейшего взаимодействия
     links = list()
     for i in range(1, 51):
         links.append("https://habr.com/ru/page" + str(i))
     return links
 
 
-def get_pages_info(html):
+def get_pages_info(html): #Берем с сайта нужную нам информацию и записываем в словарь, для дальнейшей записи в CSV файл
     data = []
     soup = BS(html, "html.parser")
     user = soup.findAll("a", class_= "post__user-info user-info")
@@ -40,13 +40,13 @@ def get_pages_info(html):
     print("pars")
     return data
 
-def head(link):
+def head(link): #Эта функция создана для удобства пользования пакетом multiprocessing
     html = get_html(link)
     data = get_pages_info(html)
     csv_write(data)
 
 
-def main():
+def main(): #Основная функция кода
     links = all_links()
     with Pool(15) as pars:
         pars.map(head, links)
